@@ -136,7 +136,7 @@ docker run -it --rm -v "${PWD}:/work" -w /work atcoder-template zsh
 ```
 
 ### 新しい問題の作成
-[atcker-cli](http://tatamo.81.la/blog/2018/12/07/atcoder-cli-installation-guide/) を利用して問題をダウンロードします。
+[atcoder-cli](http://tatamo.81.la/blog/2018/12/07/atcoder-cli-installation-guide/) を利用して問題をダウンロードします。
 
 1. コンテナのシェルで`acc new <contest-id>`コマンドを実行してコンテスト問題をダウンロード
 ```bash

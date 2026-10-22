@@ -24,7 +24,7 @@ SHELL ["/bin/zsh", "-c"]
 # cmake / ninja-build / make / gdb は CLion の Docker ツールチェーンで使用
 RUN apt-get update && \
     apt-get install -y \
-        g++-13 \
+        g++-15 \
         clang clangd \
         gdb \
         cmake ninja-build make \
@@ -35,7 +35,8 @@ RUN apt-get update && \
 
 # 一般的なコマンドで使えるように設定
 # e.g. python3.8 main.py => python main.py
-RUN update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 30 && \
+RUN update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-15 30 && \
+    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-15 30 && \
     update-alternatives --install /usr/bin/python python /usr/bin/python3.13 30 && \
     update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 30
 

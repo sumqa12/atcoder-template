@@ -49,7 +49,7 @@ docker build -t atcoder-template .devcontainer
    - **Image**: `atcoder-template:latest`
    - **CMake**: `Docker CMake`（コンテナ内の`cmake`）
    - **Build Tool**: コンテナ内の`ninja`（自動検出されない場合は`/usr/bin/ninja`）
-   - **C Compiler**: `/usr/bin/gcc-13`
+   - **C Compiler**: `/usr/bin/gcc`
    - **C++ Compiler**: `/usr/bin/g++`
    - **Debugger**: `/usr/bin/gdb`
 4. ▲ボタンでDockerツールチェーンを一番上（デフォルト）に移動
@@ -99,7 +99,7 @@ atcoder-template/
 ### インストール済みツール
 
 **コンパイラ・開発ツール**
-- `g++-13`: GNU C++コンパイラ（C++23対応）**※ 実行用**
+- `g++-15`: GNU C++コンパイラ 15.2.0（AtCoderと同じバージョン、C++23対応）**※ 実行用**
 - `clang`: LLVM C++コンパイラ **※ リント・補完する用**
 - `clangd`: Language Server Protocol実装
 - `gdb`: デバッガー
@@ -124,7 +124,7 @@ atcoder-template/
 
 ### シンボリックリンク
 
-- `g++` → `g++-13`: デフォルトでg++-13を使用
+- `g++` → `g++-15`、`gcc` → `gcc-15`: デフォルトでGCC 15を使用
 
 ## 使用方法
 
@@ -277,7 +277,7 @@ Dockerイメージの定義ファイル。以下の処理を行います：
 1. **ベースイメージ**: Ubuntu 25.10
 2. **タイムゾーン設定**: Asia/Tokyo
 3. **基本ツールインストール**: zsh, git, curl, vim等
-4. **C++環境構築**: g++-13, clang, clangd, gdb, cmake, ninja, make（CLionのDockerツールチェーン用）
+4. **C++環境構築**: g++-15, clang, clangd, gdb, cmake, ninja, make（CLionのDockerツールチェーン用）
 5. **Python環境構築**: python3.13, pip（online-judge-tools実行用）
 6. **AtCoder Libraryインストール**: `/lib/ac-library`
 7. **atcoder-cliインストール**: npm経由（`default-task-choice`を`all`に設定）

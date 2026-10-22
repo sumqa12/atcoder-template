@@ -109,7 +109,7 @@ void solve();
 int main() {
     fast_io();
     while (NUM_OF_ANSER--) {
-    solve();
+        solve();
     }
 }
 

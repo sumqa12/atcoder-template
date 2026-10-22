@@ -29,7 +29,7 @@
 ### 1. リポジトリのクローン
 
 ```bash
-git clone git@github.com:tomyou666/atcoder-template.git
+git clone git@github.com:sumqa12/atcoder-template.git
 cd atcoder-template
 ```
 

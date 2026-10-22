@@ -1,13 +1,14 @@
 *.out
-# フォルダを無視
-abc*/
 
 # ファイル名
 test*
+# 問題フォルダのサンプルケース (acc が作る tests/) は管理する
+!tests/
+!**/tests/*.out
 kaitou*
 temp*
 problem.json
-hello.cpp
+main.cpp
 
 # CMake / CLion のビルドディレクトリ
 cmake-build-*/

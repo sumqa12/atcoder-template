@@ -62,7 +62,7 @@ docker build -t atcoder-template .devcontainer
 
 ### 4. 動作確認
 
-1. ルートに`hello.cpp`というファイルを作成して、以下のサンプルコードを書きます：
+1. ルートに`main.cpp`というファイルを作成して、以下のサンプルコードを書きます：
 
 ```cpp
 #include <iostream>
@@ -75,7 +75,7 @@ int main() {
 ```
 
 2. `Tools | CMake | Reload CMake Project` を実行します
-3. 右上の実行構成で`hello`を選び、▶（`Shift+F10`）で実行します
+3. 右上の実行構成で`main`を選び、▶（`Shift+F10`）で実行します
 4. 実行ウィンドウに「Hello World」と表示されれば成功です。
 
 ## プロジェクト構成
@@ -110,6 +110,7 @@ atcoder-template/
 - `tree`: ディレクトリ構造表示
 - `git`: バージョン管理
 - `curl`: HTTPクライアント
+- `vim`: テキストエディタ（コンテナ内の設定ファイル編集用）
 
 **AtCoder関連ツール**
 - **AtCoder Library (ACL)**: `/lib/ac-library`にインストール済み
@@ -130,9 +131,18 @@ atcoder-template/
 ### コンテナのシェルを開く
 
 `acc`・`oj`・`atcs`はコンテナ内にインストールされています。CLionのターミナル（`Alt+F12`）でプロジェクトのルートから以下を実行し、コンテナのシェルに入ってから使ってください。
+カレントディレクトリの書き方がシェルによって違うので、使っているシェルに合わせて選んでください。
+
+**PowerShell / bash / zsh**
 
 ```bash
 docker run -it --rm -v "${PWD}:/work" -w /work atcoder-template zsh
+```
+
+**コマンドプロンプト（cmd.exe）**
+
+```bat
+docker run -it --rm -v "%cd%:/work" -w /work atcoder-template zsh
 ```
 
 ### 新しい問題の作成
@@ -144,6 +154,10 @@ acc new abc999
 ```
 
 > ここでログイン情報を求められますがcli経由で提出をしない場合は必要ないので何も入力せずにEnterを押下します。
+
+> Dockerイメージで`acc config default-task-choice all`を設定しているため、すべての問題が一度に取得されます。
+> 一部の問題だけ取得したい場合は`acc new abc999 --choice inquire`で選択できます。
+> あとから問題を追加したい場合は、コンテストのフォルダで`acc add --choice rest`（未取得の問題をすべて）や`acc add --choice next`（次の1問）を実行します。
 
 2. `abc<コンテスト番号>`フォルダが作成されます。a問題を解く場合は、`abc<コンテスト番号>/a`フォルダに`a.cpp`を作成して問題を解いてください。また必要に応じて `template.cpp`からマクロなどをコピーしてください。
 
@@ -262,11 +276,11 @@ Dockerイメージの定義ファイル。以下の処理を行います：
 
 1. **ベースイメージ**: Ubuntu 25.10
 2. **タイムゾーン設定**: Asia/Tokyo
-3. **基本ツールインストール**: zsh, git, curl等
+3. **基本ツールインストール**: zsh, git, curl, vim等
 4. **C++環境構築**: g++-13, clang, clangd, gdb, cmake, ninja, make（CLionのDockerツールチェーン用）
 5. **Python環境構築**: python3.13, pip（online-judge-tools実行用）
 6. **AtCoder Libraryインストール**: `/lib/ac-library`
-7. **atcoder-cliインストール**: npm経由
+7. **atcoder-cliインストール**: npm経由（`default-task-choice`を`all`に設定）
 8. **online-judge-toolsインストール**: pip経由
 9. **atcsインストール**: アーキテクチャに応じて自動選択
 

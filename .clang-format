@@ -2,3 +2,4 @@ AllowShortBlocksOnASingleLine: Empty
 AllowShortFunctionsOnASingleLine: InlineOnly
 AllowShortCaseLabelsOnASingleLine: true
 AllowShortIfStatementsOnASingleLine: AllIfsAndElse
+IndentWidth: 4

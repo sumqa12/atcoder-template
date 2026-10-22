@@ -13,7 +13,7 @@ RUN sed -i -E "s@http://(archive|security)\.ubuntu\.com/ubuntu@${UBUNTU_MIRROR}@
 
 # インフラを整備
 RUN apt-get update && \
-    apt-get install -y zsh time tzdata tree git curl && \
+    apt-get install -y zsh time tzdata tree git curl vim && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -45,6 +45,8 @@ ENV CPLUS_INCLUDE_PATH=/lib/ac-library
 
 # コンテスト補助アプリケーションをインストール
 RUN npm install -g atcoder-cli
+# acc new で毎回すべての問題を取得する (既定値の inquire だと選択が必要)
+RUN acc config default-task-choice all
 RUN pip install \
     setuptools \
     online-judge-tools \

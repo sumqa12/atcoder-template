@@ -9,17 +9,8 @@
 		"dockerfile": "Dockerfile"
 	},
 	"customizations": {
-		"vscode": {
-			"extensions": [
-				"ms-vscode.cmake-tools",
-				"mitaki28.vscode-clang",
-				"formulahendry.code-runner",
-				"rogalmic.zsh-debug",
-				"vmsynkov.colonize",
-				"KylinIdeTeam.cppdebug",
-				"llvm-vs-code-extensions.vscode-clangd",
-				"usernamehw.errorlens"
-			]
+		"jetbrains": {
+			"backend": "CLion"
 		}
 	}
 	// Features to add to the dev container. More info: https://containers.dev/features.

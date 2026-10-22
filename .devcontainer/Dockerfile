@@ -7,6 +7,10 @@ ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Asia/Tokyo
 RUN ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
 
+# aptのミラーを理研に変更 (archive.ubuntu.com / security.ubuntu.com が遅いため)
+ARG UBUNTU_MIRROR=http://ftp.riken.jp/Linux/ubuntu
+RUN sed -i -E "s@http://(archive|security)\.ubuntu\.com/ubuntu@${UBUNTU_MIRROR}@g" /etc/apt/sources.list.d/ubuntu.sources
+
 # インフラを整備
 RUN apt-get update && \
     apt-get install -y zsh time tzdata tree git curl && \
@@ -17,11 +21,13 @@ RUN apt-get update && \
 SHELL ["/bin/zsh", "-c"]
 
 # C++, Python3, PyPy3の3つの環境想定
+# cmake / ninja-build / make / gdb は CLion の Docker ツールチェーンで使用
 RUN apt-get update && \
     apt-get install -y \
         g++-13 \
         clang clangd \
         gdb \
+        cmake ninja-build make \
         python3.13 python3-pip \
         nodejs npm && \
     apt-get clean && \

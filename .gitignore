@@ -7,4 +7,8 @@ test*
 kaitou*
 temp*
 problem.json
+hello.cpp
 
+# CMake / CLion のビルドディレクトリ
+cmake-build-*/
+build/

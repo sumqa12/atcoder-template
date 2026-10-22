@@ -1,18 +1,18 @@
-# AtCoder用C++開発環境 (VS Code + Docker)
+# AtCoder用C++開発環境 (CLion + Docker)
 
-このリポジトリは、AtCoder競技プログラミング用のC++開発環境を提供します。VS CodeとDockerを使用して、統一された開発環境を構築できます。
+このリポジトリは、AtCoder競技プログラミング用のC++開発環境を提供します。CLionとDockerを使用して、統一された開発環境を構築できます。
 
 ## 概要
 
 この開発環境は以下の特徴を持ちます：
 
-- **Dockerコンテナベース**: 環境の統一性を保証
-- **VS Code Dev Containers**: シームレスな開発体験
-- **C++23対応**: 最新のC++標準に対応
+- **Dockerコンテナベース**: 環境の統一性を保証（CLionの「Dockerツールチェーン」でビルド・実行・デバッグ）
+- **CMakeによる自動ターゲット登録**: `.cpp`ファイルを置くだけで実行構成が作られる
+- **C++23対応**: 最新のC++標準に対応（`-std=gnu++23`）
 - **AtCoder Library統合**: ACLを簡単に使用可能
 - **デバッグ機能**: GDBによるデバッグサポート
-- **コードフォーマット**: clang-formatによる自動フォーマット
-- **LSPサポート**: clangdによる高度なコード補完とエラー検出
+- **テスト一括実行**: `test_<ターゲット名>`でサンプルケースを`oj`で一括判定
+- **コードフォーマット**: `.clang-format`によるフォーマット
 
 ## 環境要件
 
@@ -21,10 +21,8 @@
 - **Docker Desktop** (またはDocker Engine)
   - Windows/Mac: [Docker Desktop](https://www.docker.com/products/docker-desktop/)
   - Linux: Docker Engine
-- **Visual Studio Code**
-  - [VS Code公式サイト](https://code.visualstudio.com/)
-- **Dev Containers拡張機能**
-  - VS Code拡張機能マーケットプレイスからインストール
+- **CLion**
+  - [CLion公式サイト](https://www.jetbrains.com/clion/)
 
 ## セットアップ
 
@@ -32,65 +30,68 @@
 
 ```bash
 git clone git@github.com:tomyou666/atcoder-template.git
-cd AtCoder
+cd atcoder-template
 ```
 
-### 2. VS Codeでプロジェクトを開く
+### 2. Dockerイメージをビルド
+
+初回は数分かかります。
 
 ```bash
-code .
+docker build -t atcoder-template .devcontainer
 ```
 
-### 3. Dev Containerで開く
+### 3. CLionにDockerツールチェーンを設定
 
-1. VS Codeのコマンドパレットを開く（`Ctrl+Shift+P` / `Cmd+Shift+P`）
-2. 「Dev Containers: Reopen in Container」を選択
-3. 初回起動時は、Dockerイメージのビルドに数分かかります
+1. CLionでプロジェクトのフォルダを開く
+2. `File | Settings | Build, Execution, Deployment | Toolchains` を開く
+3. `+` → `Docker` を選び、以下を設定
+   - **Image**: `atcoder-template:latest`
+   - **CMake**: `Docker CMake`（コンテナ内の`cmake`）
+   - **Build Tool**: コンテナ内の`ninja`（自動検出されない場合は`/usr/bin/ninja`）
+   - **C Compiler**: `/usr/bin/gcc-13`
+   - **C++ Compiler**: `/usr/bin/g++`
+   - **Debugger**: `/usr/bin/gdb`
+4. ▲ボタンでDockerツールチェーンを一番上（デフォルト）に移動
+5. `Build, Execution, Deployment | CMake` で、プロファイルの **Toolchain** が `Docker` になっていることを確認
+   - 必要に応じて **Generator** を `Ninja` にします
+
+> **別の方法: Dev Container**  
+> `.devcontainer/devcontainer.json`はCLionのDev Containers機能にも対応しています。
+> `File | Remote Development | Dev Containers`から開くと、コンテナ内でCLionのバックエンドが動きます（メモリを多く使います）。
 
 ### 4. 動作確認
-**インストール確認：**
 
-コンテナが起動したら、ターミナルで以下を実行して確認：
-
-```bash
-g++ --version
-clangd --version
-```
-
-**実行確認：**
-
-1. `test.cpp`というファイルを作成して、以下のサンプルコードを書きます：
+1. ルートに`hello.cpp`というファイルを作成して、以下のサンプルコードを書きます：
 
 ```cpp
 #include <iostream>
 using namespace std;
 
 int main() {
-    cout >> "Hello World" >> endl;
+    cout << "Hello World" << endl;
     return 0;
 }
 ```
 
-2. `Ctrl+Alt+N`（Mac: `Cmd+Alt+N`）で実行します
-
-3. ターミナルに「Hello World」と表示されれば成功です。
+2. `Tools | CMake | Reload CMake Project` を実行します
+3. 右上の実行構成で`hello`を選び、▶（`Shift+F10`）で実行します
+4. 実行ウィンドウに「Hello World」と表示されれば成功です。
 
 ## プロジェクト構成
 
 ```
-AtCoder/
-├── .devcontainer/         # Dev Container設定
-│   ├── Dockerfile       # Dockerイメージ定義
-│   └── devcontainer.json # コンテナ設定ファイル
-├── .vscode/               # VS Code設定
-│   ├── settings.json     # エディタ設定
-│   ├── launch.json       # デバッグ設定
-│   └── tasks.json        # タスク設定
+atcoder-template/
+├── .devcontainer/         # コンテナ設定
+│   ├── Dockerfile       # Dockerイメージ定義（CLionのDockerツールチェーンで使用）
+│   └── devcontainer.json # Dev Container設定ファイル
+├── .idea/                 # CLionのプロジェクト設定（共有するもののみ）
+│   └── codeStyles/       # ClangFormatを有効化
+├── sample/                # 便利関数のサンプル集（mainなし）
 ├── .clang-format          # コードフォーマット設定
 ├── .clangd                # clangd設定
+├── CMakeLists.txt         # ビルド設定（.cppを自動でターゲット登録）
 ├── template.cpp           # C++テンプレートファイル
-├── test.cpp               # テスト用ファイル
-├── module/                # 共通モジュール
 └── README.md              # このテンプレートの説明
 ```
 
@@ -127,10 +128,18 @@ AtCoder/
 
 ## 使用方法
 
+### コンテナのシェルを開く
+
+`acc`・`oj`・`atcs`はコンテナ内にインストールされています。CLionのターミナル（`Alt+F12`）でプロジェクトのルートから以下を実行し、コンテナのシェルに入ってから使ってください。
+
+```bash
+docker run -it --rm -v "${PWD}:/work" -w /work atcoder-template zsh
+```
+
 ### 新しい問題の作成
 [atcker-cli](http://tatamo.81.la/blog/2018/12/07/atcoder-cli-installation-guide/) を利用して問題をダウンロードします。
 
-1. `acc new <contest-id>`コマンドでコンテスト問題をダウンロード
+1. コンテナのシェルで`acc new <contest-id>`コマンドを実行してコンテスト問題をダウンロード
 ```bash
 acc new abc999
 ```
@@ -138,6 +147,8 @@ acc new abc999
 > ここでログイン情報を求められますがcli経由で提出をしない場合は必要ないので何も入力せずにEnterを押下します。
 
 2. `abc<コンテスト番号>`フォルダが作成されます。a問題を解く場合は、`abc<コンテスト番号>/a`フォルダに`a.cpp`を作成して問題を解いてください。また必要に応じて `template.cpp`からマクロなどをコピーしてください。
+
+3. CLionで`Tools | CMake | Reload CMake Project`を実行すると、`abc999_a_a`（実行用）と`test_abc999_a_a`（サンプル一括判定用）のターゲットが作られます。
 
 
 ```
@@ -197,70 +208,54 @@ abc999
 
 ### コードの実行
 
-#### 方法1: Code Runner拡張機能を使用
+`CMakeLists.txt`がプロジェクト内の`.cpp`ファイル（`sample/`を除く）を探し、1ファイルにつき1つの実行ターゲットを作ります。
+ターゲット名はパスの`/`や`.`を`_`に置き換えたものです（例: `abc999/a/a.cpp` → `abc999_a_a`）。
 
-1. ファイルを開く
-2. `Ctrl+Alt+N`（Mac: `Cmd+Alt+N`）で実行
-3. または、右上の▶ボタンをクリック
+> 新しい`.cpp`を作ったら`Tools | CMake | Reload CMake Project`を実行してください。実行構成の一覧に追加されます。
 
-**実行コマンド**: `g++ -O2 -std=c++23 "$fileName" && ./a.out && rm ./a.out`
+#### 方法1: 普通に実行
+
+1. 右上の実行構成で対象のターゲット（例: `abc999_a_a`）を選択
+2. ▶ボタン（`Shift+F10`）で実行
+3. 実行ウィンドウに標準入力を打ち込めます
+
+サンプル入力をファイルから流したい場合は、`Run | Edit Configurations...` で対象の構成を開き、**Redirect input from** に`abc999/a/tests/sample-1.in`などを指定します。
 
 #### 方法2: デバッグモードで実行（ブレークポイントを利用したい場合）
 
-F5キーを押すか、デバッグパネルから「C++:Debug」を選択
+1. 行番号の右側をクリックしてブレークポイントを設定
+2. 🐞ボタン（`Shift+F9`）でデバッグ開始
+3. 変数のホバー、ウォッチ式、コールスタックなどを確認可能
 
-ブレークポイントで止まってくれます。
+#### 方法3: テストケース一括実行（`test_<ターゲット名>`）
 
-#### 方法3: テストケース一括実行（C++:AllTest）
+`tests/`ディレクトリがある問題には、`oj t`でサンプルを一括判定するターゲット`test_<ターゲット名>`が作られます。
 
-1. `acc new abc999`でコンテストをダウンロードすると、`abc999/a/`ディレクトリに`tests/`ディレクトリが自動的に作成され、テストケースファイルが配置されます。
-2. `abc999/a/`ディレクトリで`a.cpp`を開きます（なければ新規作成）
-3. VS Codeのデバッグパネル（`Ctrl+Shift+D`）から「C++:AllTest」を選択
-4. `F5`キーを押すか、デバッグ開始ボタンをクリック
-5. すべてのテストケースが実行され、結果が表示されます
+1. 右上の実行構成で`test_abc999_a_a`を選択
+2. 🔨ボタン（`Ctrl+F9`）でビルド
+3. 解答がビルドされたあと`oj t`が実行され、結果（AC/WAなど）がビルドウィンドウに表示されます
+
+### ビルドタイプ
+
+- **Debug**（デフォルト）: `-g`付き。デバッグ向け
+- **Release**: `-O3`付き。実行時間を確認したいときに使います
+  - `Settings | Build, Execution, Deployment | CMake`で`+`を押すとReleaseプロファイルを追加できます
 
 ### コードのフォーマット
 
-- **フォーマッター**: clangd（clang-format使用）
-
-## デバッグ機能（ブレークポイントを利用したい場合）
-
-通常の実行（Ctrl+Alt+N）だとブレークポイントで止まってくれません。
-
-でバック機能を利用することで指定したところで止まって変数の確認ができます。
-
-### デバッグ設定
-
-VS Codeのデバッグパネル（`Ctrl+Shift+D`）から以下の設定を選択できます：
-
-#### 1. C++:Debug
-- **用途**: 通常のデバッグ実行
-- **動作**:
-  - ビルドタスク（`buildC++`）を実行
-  - GDBでデバッグ開始
-  - デバッグ終了後、実行ファイルを自動削除
-
-#### 2. C++:AllTest
-- **用途**: テストケースを一括実行して検証
-- **動作**:
-  - ビルドタスク（`buildForAllTest`）を実行
-  - `oj t`コマンドで`tests/`ディレクトリ内のテストケースを実行
-  - デバッグ終了後、実行ファイルを自動削除
-- **使い方**:
-  1. `acc new abc432`でコンテストをダウンロードすると、`abc432/a/`ディレクトリに`tests/`ディレクトリが自動的に作成され、テストケースファイル（`sample-1.in`, `sample-1.out`など）が配置されます
-  2. `abc432/a/`ディレクトリで`a.cpp`を開きます
-  3. VS Codeのデバッグパネル（`Ctrl+Shift+D`）から「C++:AllTest」を選択
-  4. F5キーを押すか、デバッグ開始ボタンをクリック
-  5. すべてのテストケースが実行され、結果が表示されます
-
-### ブレークポイントの設定
-
-1. 行番号の左側をクリックしてブレークポイントを設定
-2. F5でデバッグ開始
-3. 変数のホバー、ウォッチ式、コールスタックなどを確認可能
-
+- `.clang-format`の設定で`Ctrl+Alt+L`でフォーマットされます（`.idea/codeStyles`でClangFormatを有効化済み）
+- 保存時に自動フォーマットしたい場合は`Settings | Tools | Actions on Save`で **Reformat code** を有効にします
 
 ## 設定ファイルの説明
+
+### CMakeLists.txt
+
+- **C++標準**: `-std=gnu++23`
+- **警告**: `-Wall -Wextra -Wshadow`
+- **AtCoder Library**: `/lib/ac-library`をインクルードパスに追加（`-DAC_LIBRARY_DIR=<path>`で変更可能）
+- **実行ターゲット**: `.cpp`ごとに自動作成（`sample/`、`cmake-build-*/`、隠しディレクトリは除外）
+- **テストターゲット**: `tests/`がある問題に`test_<ターゲット名>`を作成（`oj`が見つかる場合のみ）
+- **sample/**: `main`がないため、コード解析用のオブジェクトライブラリ`samples`として登録（通常のビルドには含まれません）
 
 ### Dockerfile
 
@@ -269,7 +264,7 @@ Dockerイメージの定義ファイル。以下の処理を行います：
 1. **ベースイメージ**: Ubuntu 25.10
 2. **タイムゾーン設定**: Asia/Tokyo
 3. **基本ツールインストール**: zsh, git, curl等
-4. **C++環境構築**: g++-13, clang, clangd, gdb
+4. **C++環境構築**: g++-13, clang, clangd, gdb, cmake, ninja, make（CLionのDockerツールチェーン用）
 5. **Python環境構築**: python3.13, pip（online-judge-tools実行用）
 6. **AtCoder Libraryインストール**: `/lib/ac-library`
 7. **atcoder-cliインストール**: npm経由
@@ -278,42 +273,15 @@ Dockerイメージの定義ファイル。以下の処理を行います：
 
 ### .devcontainer/devcontainer.json
 
-Dev Containerの設定ファイル：
+Dev Containerの設定ファイル（CLionのDev Containers機能で使う場合）：
 
 - **ビルドコンテキスト**: プロジェクトルート
-- **Dockerfile**: `../Dockerfile`を参照
-- **VS Code拡張機能**: 自動インストール
-  - CMake Tools
-  - C/C++ Extension Pack
-  - Code Runner
-  - clangd
+- **Dockerfile**: `.devcontainer/Dockerfile`を参照
+- **IDEバックエンド**: CLion
 
-### .vscode/settings.json
+### .idea/
 
-#### エディタ設定
-
-- **フォーマット**: 保存時自動フォーマット有効
-- **タブサイズ**: C++は2スペース、Pythonは4スペース
-- **フォーマッター**: clangd（C++）
-
-#### Code Runner設定
-
-- **C++実行コマンド**: `g++ -O2 -std=c++23 "$fileName" && ./a.out && rm ./a.out`
-- **ターミナル実行**: 有効
-
-#### clangd設定
-
-- **C++標準**: `-std=gnu++2b`（C++23）
-- **バックグラウンドインデックス**: 有効
-- **clang-tidy**: 有効
-- **補完スタイル**: detailed
-- **フォールバックスタイル**: LLVM
-
-#### オートコンプリート設定
-
-競技プログラミング向けに、不要な補完を無効化：
-- クラス、コンストラクタ、列挙型などの補完を無効化
-- キーワード補完のみ有効
+CLionのプロジェクト設定です。共有したい設定（`codeStyles/`）のみをコミットし、`workspace.xml`などの個人設定は`.idea/.gitignore`で除外しています。
 
 ## 便利な機能
 
@@ -385,9 +353,9 @@ acc test
 cd abc432/a
 
 # テストケースを実行（tests/ディレクトリ内のテストケースを一括実行）
-oj t -d tests/
+g++ -std=gnu++23 a.cpp && oj t -d tests/
 
-# または、デバッグパネルから「C++:AllTest」を選択してF5キーを押す
+# または、CLionで「test_abc432_a_a」ターゲットをビルド（Ctrl+F9）する
 ```
 
 詳細は[公式GitHub](https://github.com/online-judge-tools/oj)を参照してください。

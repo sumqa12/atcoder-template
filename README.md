@@ -85,8 +85,7 @@ atcoder-template/
 ├── .devcontainer/         # コンテナ設定
 │   ├── Dockerfile       # Dockerイメージ定義（CLionのDockerツールチェーンで使用）
 │   └── devcontainer.json # Dev Container設定ファイル
-├── .idea/                 # CLionのプロジェクト設定（共有するもののみ）
-│   └── codeStyles/       # ClangFormatを有効化
+├── .idea/                 # CLionのプロジェクト設定（個人設定は除外）
 ├── sample/                # 便利関数のサンプル集（mainなし）
 ├── .clang-format          # コードフォーマット設定
 ├── .clangd                # clangd設定
@@ -243,7 +242,7 @@ abc999
 
 ### コードのフォーマット
 
-- `.clang-format`の設定で`Ctrl+Alt+L`でフォーマットされます（`.idea/codeStyles`でClangFormatを有効化済み）
+- CLionはプロジェクトのルートに`.clang-format`があると自動でClangFormatを使うため、`Ctrl+Alt+L`で`.clang-format`の設定どおりにフォーマットされます
 - 保存時に自動フォーマットしたい場合は`Settings | Tools | Actions on Save`で **Reformat code** を有効にします
 
 ## 設定ファイルの説明
@@ -281,7 +280,7 @@ Dev Containerの設定ファイル（CLionのDev Containers機能で使う場合
 
 ### .idea/
 
-CLionのプロジェクト設定です。共有したい設定（`codeStyles/`）のみをコミットし、`workspace.xml`などの個人設定は`.idea/.gitignore`で除外しています。
+CLionが生成するプロジェクト設定です。`workspace.xml`やMaterial Themeプラグインの設定（`material_theme_project_new.xml`）などの個人設定は`.idea/.gitignore`で除外しています。
 
 ## 便利な機能
 
